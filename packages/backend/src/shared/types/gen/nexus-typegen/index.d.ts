@@ -4,7 +4,6 @@
  */
 
 
-import type { Context } from "./../../../../context"
 import type { core } from "nexus"
 declare global {
   interface NexusGenCustomInputMethods<TypeName extends string> {
@@ -44,6 +43,23 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  Film: { // root type
+    description: string; // String!
+    director: string; // String!
+    id: string; // String!
+    locations?: Array<string | null> | null; // [String]
+    original_title?: string | null; // String
+    original_title_romanised?: string | null; // String
+    people?: Array<string | null> | null; // [String]
+    producer?: string | null; // String
+    release_date: string; // String!
+    rt_score: string; // String!
+    running_time: string; // String!
+    species?: Array<string | null> | null; // [String]
+    title: string; // String!
+    url: string; // String!
+    vehicles?: Array<string | null> | null; // [String]
+  }
   HelloWorld: { // root type
     message?: string | null; // String
   }
@@ -62,6 +78,23 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  Film: { // field return type
+    description: string; // String!
+    director: string; // String!
+    id: string; // String!
+    locations: Array<string | null> | null; // [String]
+    original_title: string | null; // String
+    original_title_romanised: string | null; // String
+    people: Array<string | null> | null; // [String]
+    producer: string | null; // String
+    release_date: string; // String!
+    rt_score: string; // String!
+    running_time: string; // String!
+    species: Array<string | null> | null; // [String]
+    title: string; // String!
+    url: string; // String!
+    vehicles: Array<string | null> | null; // [String]
+  }
   HelloWorld: { // field return type
     message: string | null; // String
   }
@@ -69,12 +102,31 @@ export interface NexusGenFieldTypes {
     placeholder: string | null; // String
   }
   Query: { // field return type
+    film: NexusGenRootTypes['Film'] | null; // Film
+    films: NexusGenRootTypes['Film'][] | null; // [Film!]
     helloWorld: NexusGenRootTypes['HelloWorld']; // HelloWorld!
     placeholder: string | null; // String
   }
 }
 
 export interface NexusGenFieldTypeNames {
+  Film: { // field return type name
+    description: 'String'
+    director: 'String'
+    id: 'String'
+    locations: 'String'
+    original_title: 'String'
+    original_title_romanised: 'String'
+    people: 'String'
+    producer: 'String'
+    release_date: 'String'
+    rt_score: 'String'
+    running_time: 'String'
+    species: 'String'
+    title: 'String'
+    url: 'String'
+    vehicles: 'String'
+  }
   HelloWorld: { // field return type name
     message: 'String'
   }
@@ -82,12 +134,19 @@ export interface NexusGenFieldTypeNames {
     placeholder: 'String'
   }
   Query: { // field return type name
+    film: 'Film'
+    films: 'Film'
     helloWorld: 'HelloWorld'
     placeholder: 'String'
   }
 }
 
 export interface NexusGenArgTypes {
+  Query: {
+    film: { // args
+      id: string; // String!
+    }
+  }
 }
 
 export interface NexusGenAbstractTypeMembers {
@@ -121,7 +180,7 @@ export type NexusGenFeaturesConfig = {
 }
 
 export interface NexusGenTypes {
-  context: Context;
+  context: any;
   inputTypes: NexusGenInputs;
   rootTypes: NexusGenRootTypes;
   inputTypeShapes: NexusGenInputs & NexusGenEnums & NexusGenScalars;
