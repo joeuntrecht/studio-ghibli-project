@@ -19,7 +19,7 @@
 
 ## Tasks
 
-- [ ] 1.0 Backend GraphQL Setup and API Integration
+- [x] 1.0 Backend GraphQL Setup and API Integration
   - [x] 1.1 Update GraphQL schema objectTypes to include Film type with all required fields
   - [x] 1.2 Create GraphQL queries for individual film and all films
   - [x] 1.3 Implement HTTP service to connect to Studio Ghibli API
@@ -27,12 +27,12 @@
   - [x] 1.5 Add error handling for API failures
   - [x] 1.6 Test backend GraphQL endpoints
 
-- [ ] 2.0 Frontend GraphQL Integration and Code Generation
-  - [ ] 2.1 Set up Apollo Client configuration
-  - [ ] 2.2 Configure GraphQL codegen for type generation
-  - [ ] 2.3 Generate typed GraphQL hooks and queries
-  - [ ] 2.4 Create frontend GraphQL query files
-  - [ ] 2.5 Test GraphQL integration
+- [x] 2.0 Frontend GraphQL Integration and Code Generation
+  - [x] 2.1 Set up Apollo Client configuration
+  - [x] 2.2 Configure GraphQL codegen for type generation
+  - [x] 2.3 Generate typed GraphQL hooks and queries
+  - [x] 2.4 Create frontend GraphQL query files
+  - [x] 2.5 Test GraphQL integration
 
 - [ ] 3.0 Film Button Interface and Loading States
   - [ ] 3.1 Create LoadingButton component with loading state
