@@ -35,12 +35,12 @@
   - [x] 2.5 Test GraphQL integration
 
 - [ ] 3.0 Film Button Interface and Loading States
-  - [ ] 3.1 Create LoadingButton component with loading state
-  - [ ] 3.2 Implement Home component with four film buttons
-  - [ ] 3.3 Add click handlers for film button interactions
-  - [ ] 3.4 Implement loading states for button clicks
-  - [ ] 3.5 Style buttons according to Zeplin designs
-  - [ ] 3.6 Test button interactions and loading states
+  - [x] 3.1 Create LoadingButton component with loading state
+  - [x] 3.2 Implement Home component with four film buttons
+  - [x] 3.3 Add click handlers for film button interactions
+  - [x] 3.4 Implement loading states for button clicks
+  - [x] 3.5 Style buttons according to Zeplin designs
+  - [x] 3.6 Test button interactions and loading states
 
 - [ ] 4.0 Interactive Film Cards and Responsive Design
   - [ ] 4.1 Create FilmCard component with flip animation
