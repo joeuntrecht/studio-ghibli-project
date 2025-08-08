@@ -14,6 +14,8 @@ export const Film = objectType({
     t.nonNull.string('title');
     t.string('original_title');
     t.string('original_title_romanised');
+    t.string('image');
+    t.string('movie_banner');
     t.nonNull.string('description');
     t.nonNull.string('director');
     t.string('producer');

@@ -48,7 +48,9 @@ export interface NexusGenObjects {
     description: string; // String!
     director: string; // String!
     id: string; // String!
+    image?: string | null; // String
     locations?: Array<string | null> | null; // [String]
+    movie_banner?: string | null; // String
     original_title?: string | null; // String
     original_title_romanised?: string | null; // String
     people?: Array<string | null> | null; // [String]
@@ -83,7 +85,9 @@ export interface NexusGenFieldTypes {
     description: string; // String!
     director: string; // String!
     id: string; // String!
+    image: string | null; // String
     locations: Array<string | null> | null; // [String]
+    movie_banner: string | null; // String
     original_title: string | null; // String
     original_title_romanised: string | null; // String
     people: Array<string | null> | null; // [String]
@@ -115,7 +119,9 @@ export interface NexusGenFieldTypeNames {
     description: 'String'
     director: 'String'
     id: 'String'
+    image: 'String'
     locations: 'String'
+    movie_banner: 'String'
     original_title: 'String'
     original_title_romanised: 'String'
     people: 'String'

@@ -1,8 +1,25 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { GET_FILM, GET_ALL_FILMS } from '~/graphql/queries/films';
 import type { GetFilmQuery, GetAllFilmsQuery } from '~/graphql/gen/graphql';
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 
 describe('GraphQL Integration', () => {
+  let client: ApolloClient<any>;
+
+  beforeAll(() => {
+    // Create Apollo Client for integration tests
+    client = new ApolloClient({
+      link: new HttpLink({
+        uri: 'http://localhost:4000/graphql',
+      }),
+      cache: new InMemoryCache(),
+    });
+  });
+
+  afterAll(async () => {
+    await client.clearStore();
+  });
+
   it('should have properly typed film query', () => {
     // This test verifies that our GraphQL queries are properly typed
     expect(GET_FILM).toBeDefined();
@@ -85,5 +102,60 @@ describe('GraphQL Integration', () => {
     // This test verifies that our GraphQL queries have the correct structure
     expect(GET_FILM.kind).toBe('Document');
     expect(GET_ALL_FILMS.kind).toBe('Document');
+  });
+
+  it('should successfully query a single film from the backend', async () => {
+    // This is a real integration test that queries the actual backend
+    const result = await client.query({
+      query: GET_FILM,
+      variables: {
+        id: 'ebbb6b7c-945c-41ee-a792-de0e43191bd8',
+      },
+    });
+
+    expect(result.data).toBeDefined();
+    expect(result.data.film).toBeDefined();
+    expect(result.data.film?.id).toBe('ebbb6b7c-945c-41ee-a792-de0e43191bd8');
+    expect(result.data.film?.title).toBe('Porco Rosso');
+    expect(result.data.film?.director).toBe('Hayao Miyazaki');
+    expect(result.data.film?.rt_score).toBe('94');
+  });
+
+  it('should successfully query all films from the backend', async () => {
+    // This is a real integration test that queries the actual backend
+    const result = await client.query({
+      query: GET_ALL_FILMS,
+    });
+
+    expect(result.data).toBeDefined();
+    expect(result.data.films).toBeDefined();
+    expect(Array.isArray(result.data.films)).toBe(true);
+    expect(result.data.films?.length).toBeGreaterThan(0);
+
+    // Check that films have the expected structure
+    const firstFilm = result.data.films?.[0];
+    expect(firstFilm).toBeDefined();
+    if (firstFilm) {
+      expect(firstFilm.id).toBeDefined();
+      expect(firstFilm.title).toBeDefined();
+      expect(firstFilm.director).toBeDefined();
+      expect(firstFilm.rt_score).toBeDefined();
+    }
+  });
+
+  it('should handle GraphQL errors gracefully', async () => {
+    // Test error handling with an invalid film ID
+    try {
+      await client.query({
+        query: GET_FILM,
+        variables: {
+          id: 'invalid-id',
+        },
+      });
+      // If we reach here, the test should fail
+      expect(true).toBe(false);
+    } catch (error) {
+      expect(error).toBeDefined();
+    }
   });
 });

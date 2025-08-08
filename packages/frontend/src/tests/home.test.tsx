@@ -107,15 +107,12 @@ describe('Home Component', () => {
       'Fetching film with ID: ebbb6b7c-945c-41ee-a792-de0e43191bd8',
     );
 
-    // Wait for the loading state to complete
+    // Wait for the loading state to complete and check for film card
     await waitFor(
       () => {
-        expect(console.log).toHaveBeenCalledWith(
-          'Processed film data:',
-          expect.stringContaining(
-            '"id": "ebbb6b7c-945c-41ee-a792-de0e43191bd8"',
-          ),
-        );
+        // Check for the film images (front and back) instead of console.log
+        const images = screen.getAllByAltText('Porco Rosso poster');
+        expect(images).toHaveLength(2);
       },
       { timeout: 2000 },
     );
@@ -139,21 +136,16 @@ describe('Home Component', () => {
       'Fetching film with ID: 58611129-2dbc-4a81-a72f-77ddfc1b1b49',
     );
 
-    // Wait for both to complete
+    // Wait for both to complete and check for film cards
     await waitFor(
       () => {
-        expect(console.log).toHaveBeenCalledWith(
-          'Processed film data:',
-          expect.stringContaining(
-            '"id": "ebbb6b7c-945c-41ee-a792-de0e43191bd8"',
-          ),
+        // Check for both film images instead of console.log
+        const porcoImages = screen.getAllByAltText('Porco Rosso poster');
+        const totoroImages = screen.getAllByAltText(
+          'My Neighbor Totoro poster',
         );
-        expect(console.log).toHaveBeenCalledWith(
-          'Processed film data:',
-          expect.stringContaining(
-            '"id": "58611129-2dbc-4a81-a72f-77ddfc1b1b49"',
-          ),
-        );
+        expect(porcoImages).toHaveLength(2);
+        expect(totoroImages).toHaveLength(2);
       },
       { timeout: 2000 },
     );
@@ -184,8 +176,9 @@ describe('Home Component', () => {
   it('has clickable film buttons', () => {
     render(<Home />);
 
+    // Get all buttons (4 film buttons + 1 "...and many more" button)
     const buttons = screen.getAllByRole('button');
-    expect(buttons.length).toBe(4);
+    expect(buttons.length).toBe(5);
 
     buttons.forEach((button) => {
       expect(button).toBeInTheDocument();
@@ -195,9 +188,9 @@ describe('Home Component', () => {
   it('renders with proper styling classes', () => {
     render(<Home />);
 
-    // Check that the buttons are rendered
+    // Check that the buttons are rendered (4 film buttons + 1 "...and many more" button)
     const buttons = screen.getAllByRole('button');
-    expect(buttons.length).toBe(4);
+    expect(buttons.length).toBe(5);
 
     // Check that buttons have proper styling
     buttons.forEach((button) => {

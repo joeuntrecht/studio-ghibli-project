@@ -34,7 +34,7 @@
   - [x] 2.4 Create frontend GraphQL query files
   - [x] 2.5 Test GraphQL integration
 
-- [ ] 3.0 Film Button Interface and Loading States
+- [x] 3.0 Film Button Interface and Loading States
   - [x] 3.1 Create LoadingButton component with loading state
   - [x] 3.2 Implement Home component with four film buttons
   - [x] 3.3 Add click handlers for film button interactions
@@ -42,20 +42,20 @@
   - [x] 3.5 Style buttons according to Zeplin designs
   - [x] 3.6 Test button interactions and loading states
 
-- [ ] 4.0 Interactive Film Cards and Responsive Design
-  - [ ] 4.1 Create FilmCard component with flip animation
-  - [ ] 4.2 Implement card front (image and title)
-  - [ ] 4.3 Implement card back (banner, description, director, release date, runtime, Rotten Tomatoes score)
-  - [ ] 4.4 Add hover interactions for desktop
-  - [ ] 4.5 Add click interactions for mobile
-  - [ ] 4.6 Implement responsive design (single column on mobile)
-  - [ ] 4.7 Ensure mobile compatibility down to 320px
-  - [ ] 4.8 Test card interactions on both desktop and mobile
+- [x] 4.0 Interactive Film Cards and Responsive Design
+  - [x] 4.1 Create FilmCard component with flip animation
+  - [x] 4.2 Implement card front (image and title) - Fixed button sizing to match Zeplin design, added arrow icons and adjusted text size
+  - [x] 4.3 Implement card back (banner, description, director, release date, runtime, Rotten Tomatoes score)
+  - [x] 4.4 Add hover interactions for desktop
+  - [x] 4.5 Add click interactions for mobile
+  - [x] 4.6 Implement responsive design (single column on mobile)
+  - [x] 4.7 Ensure mobile compatibility down to 320px
+  - [x] 4.8 Test card interactions on both desktop and mobile
 
-- [ ] 5.0 Testing and Bonus Features
-  - [ ] 5.1 Write unit tests for all components
-  - [ ] 5.2 Write integration tests for GraphQL queries
-  - [ ] 5.3 Test responsive design across different screen sizes
-  - [ ] 5.4 Implement "...rest" button for all remaining films
-  - [ ] 5.5 Add error boundaries and error handling
-  - [ ] 5.6 Run full test suite and fix any issues
+  - [x] 5.0 Testing and Bonus Features
+  - [x] 5.1 Write unit tests for all components
+  - [x] 5.2 Write integration tests for GraphQL queries
+  - [x] 5.3 Test responsive design across different screen sizes
+  - [x] 5.4 Implement "...rest" button for all remaining films
+  - [x] 5.5 Add error boundaries and error handling
+  - [x] 5.6 Run full test suite and fix any issues

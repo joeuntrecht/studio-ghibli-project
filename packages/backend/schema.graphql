@@ -9,7 +9,9 @@ type Film {
   description: String!
   director: String!
   id: String!
+  image: String
   locations: [String]
+  movie_banner: String
   original_title: String
   original_title_romanised: String
   people: [String]

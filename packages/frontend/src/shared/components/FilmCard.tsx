@@ -26,7 +26,7 @@ interface FilmCardProps {
   loading?: boolean;
 }
 
-const FlipCard = styled(Card)(({ theme }) => ({
+const FlipCard = styled(Card)({
   position: 'relative',
   width: '100%',
   height: '300px',
@@ -41,7 +41,17 @@ const FlipCard = styled(Card)(({ theme }) => ({
     transform: 'translateY(-8px)',
     boxShadow: '0 16px 48px rgba(0, 0, 0, 0.2)',
   },
-}));
+  // Responsive height for single column layouts
+  '@media (max-width: 600px)': {
+    height: '450px', // Taller on mobile (single column)
+  },
+  '@media (min-width: 601px) and (max-width: 960px)': {
+    height: '350px', // Medium height on tablet
+  },
+  '@media (min-width: 961px)': {
+    height: '300px', // Standard height on desktop (multi-column)
+  },
+});
 
 const FlipCardInner = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isFlipped',
@@ -225,22 +235,43 @@ export const FilmCard: React.FC<FilmCardProps> = ({
   const [isFlipped, setIsFlipped] = useState(false);
   const isTouchDevice = useMediaQuery('(hover: none) and (pointer: coarse)');
 
+  // Simple mobile detection
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobileDevice =
+        /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+          userAgent,
+        );
+      setIsMobile(isMobileDevice);
+    };
+
+    checkIfMobile();
+  }, []);
+
   const handleMouseEnter = () => {
-    if (!isTouchDevice) {
+    // Only hover on desktop (not mobile or touch devices)
+    if (!isTouchDevice && !isMobile) {
       setIsFlipped(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (!isTouchDevice) {
+    // Only hover on desktop (not mobile or touch devices)
+    if (!isTouchDevice && !isMobile) {
       setIsFlipped(false);
     }
   };
 
   const handleClick = () => {
-    if (isTouchDevice) {
+    // For mobile/touch devices, always allow flipping
+    if (isTouchDevice || isMobile) {
       setIsFlipped(!isFlipped);
     }
+
+    // Always call onClick for film fetching
     if (onClick) {
       onClick();
     }
@@ -264,8 +295,11 @@ export const FilmCard: React.FC<FilmCardProps> = ({
               src={film.image}
               alt={`${film.title} poster`}
               onError={(e) => {
-                // Fallback to colored background if image fails to load
+                console.warn(`Failed to load image for ${film.title}:`, e);
                 e.currentTarget.style.display = 'none';
+              }}
+              onLoad={() => {
+                console.log(`Successfully loaded image for ${film.title}`);
               }}
             />
           )}
@@ -273,7 +307,7 @@ export const FilmCard: React.FC<FilmCardProps> = ({
 
         {/* Back of card */}
         <CardBack>
-          {isTouchDevice && (
+          {(isTouchDevice || isMobile) && (
             <CloseButton
               onClick={(e) => {
                 e.stopPropagation();
@@ -308,6 +342,13 @@ export const FilmCard: React.FC<FilmCardProps> = ({
                     height: '100%',
                     objectFit: 'cover',
                     objectPosition: 'top',
+                  }}
+                  onError={(e) => {
+                    console.warn(
+                      `Failed to load back image for ${film.title}:`,
+                      e,
+                    );
+                    e.currentTarget.style.display = 'none';
                   }}
                 />
               )}
