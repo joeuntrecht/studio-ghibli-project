@@ -192,6 +192,7 @@ const Home = () => {
 
   const handleShowAllFilms = async () => {
     setLoadingAllFilms(true);
+
     try {
       console.log('Fetching all films...');
 
