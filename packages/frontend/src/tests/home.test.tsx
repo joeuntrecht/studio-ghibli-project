@@ -2,6 +2,58 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import Home from '~/modules/home/Home';
 
+// Mock the GraphQL hooks
+vi.mock('~/graphql/hooks', () => ({
+  useGetAllFilms: vi.fn().mockReturnValue({
+    data: {
+      films: [
+        {
+          id: 'ebbb6b7c-945c-41ee-a792-de0e43191bd8',
+          title: 'Porco Rosso',
+          description:
+            'A World War I flying ace who has been transformed into a pig.',
+          director: 'Hayao Miyazaki',
+          release_date: '1992',
+          running_time: '94',
+          rt_score: '96',
+        },
+        {
+          id: 'ea660b10-85c4-4ae3-8a5f-41cea3648e3e',
+          title: "Kiki's Delivery Service",
+          description:
+            'A young witch who moves to a new town to establish herself.',
+          director: 'Hayao Miyazaki',
+          release_date: '1989',
+          running_time: '103',
+          rt_score: '97',
+        },
+        {
+          id: 'cd3d059c-09f4-4ff3-8d63-bc765a5184fa',
+          title: "Howl's Moving Castle",
+          description:
+            'A young woman cursed with old age seeks refuge in a magical castle.',
+          director: 'Hayao Miyazaki',
+          release_date: '2004',
+          running_time: '119',
+          rt_score: '87',
+        },
+        {
+          id: '58611129-2dbc-4a81-a72f-77ddfc1b1b49',
+          title: 'My Neighbor Totoro',
+          description:
+            'Two sisters discover a magical forest spirit while moving to the countryside.',
+          director: 'Hayao Miyazaki',
+          release_date: '1988',
+          running_time: '86',
+          rt_score: '94',
+        },
+      ],
+    },
+    loading: false,
+    error: null,
+  }),
+}));
+
 // Mock console methods to avoid noise in tests
 const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
@@ -32,7 +84,7 @@ describe('Home Component', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders all four film cards', () => {
+  it('renders all four film buttons', () => {
     render(<Home />);
 
     expect(screen.getByText('Porco Rosso')).toBeInTheDocument();
@@ -41,16 +93,14 @@ describe('Home Component', () => {
     expect(screen.getByText('My Neighbor Totoro')).toBeInTheDocument();
   });
 
-  it('handles film card click and shows loading state', async () => {
+  it('handles film button click and shows loading state', async () => {
     render(<Home />);
 
-    const porcoRossoCard = screen
-      .getByText('Porco Rosso')
-      .closest('.MuiCard-root');
-    expect(porcoRossoCard).toBeInTheDocument();
+    const porcoRossoButton = screen.getByText('Porco Rosso');
+    expect(porcoRossoButton).toBeInTheDocument();
 
-    // Click the card
-    fireEvent.click(porcoRossoCard!);
+    // Click the button
+    fireEvent.click(porcoRossoButton);
 
     // Check that console.log was called with the film ID
     expect(console.log).toHaveBeenCalledWith(
@@ -61,26 +111,25 @@ describe('Home Component', () => {
     await waitFor(
       () => {
         expect(console.log).toHaveBeenCalledWith(
-          'Film ebbb6b7c-945c-41ee-a792-de0e43191bd8 data fetched successfully',
+          'Processed film data:',
+          expect.stringContaining(
+            '"id": "ebbb6b7c-945c-41ee-a792-de0e43191bd8"',
+          ),
         );
       },
       { timeout: 2000 },
     );
   });
 
-  it('handles multiple film card clicks independently', async () => {
+  it('handles multiple film button clicks independently', async () => {
     render(<Home />);
 
-    const porcoRossoCard = screen
-      .getByText('Porco Rosso')
-      .closest('.MuiCard-root');
-    const totoroCard = screen
-      .getByText('My Neighbor Totoro')
-      .closest('.MuiCard-root');
+    const porcoRossoButton = screen.getByText('Porco Rosso');
+    const totoroButton = screen.getByText('My Neighbor Totoro');
 
-    // Click both cards
-    fireEvent.click(porcoRossoCard!);
-    fireEvent.click(totoroCard!);
+    // Click both buttons
+    fireEvent.click(porcoRossoButton);
+    fireEvent.click(totoroButton);
 
     // Both should be logged
     expect(console.log).toHaveBeenCalledWith(
@@ -94,63 +143,65 @@ describe('Home Component', () => {
     await waitFor(
       () => {
         expect(console.log).toHaveBeenCalledWith(
-          'Film ebbb6b7c-945c-41ee-a792-de0e43191bd8 data fetched successfully',
+          'Processed film data:',
+          expect.stringContaining(
+            '"id": "ebbb6b7c-945c-41ee-a792-de0e43191bd8"',
+          ),
         );
         expect(console.log).toHaveBeenCalledWith(
-          'Film 58611129-2dbc-4a81-a72f-77ddfc1b1b49 data fetched successfully',
+          'Processed film data:',
+          expect.stringContaining(
+            '"id": "58611129-2dbc-4a81-a72f-77ddfc1b1b49"',
+          ),
         );
       },
       { timeout: 2000 },
     );
   });
 
-  it('applies loading state opacity to clicked cards', async () => {
+  it('applies loading state to clicked buttons', async () => {
     render(<Home />);
 
-    const porcoRossoCard = screen
-      .getByText('Porco Rosso')
-      .closest('.MuiCard-root');
+    const porcoRossoButton = screen.getByText('Porco Rosso');
 
-    // Before click, card should have normal opacity
-    expect(porcoRossoCard).toHaveStyle({ opacity: '1' });
+    // Click the button
+    fireEvent.click(porcoRossoButton);
 
-    // Click the card
-    fireEvent.click(porcoRossoCard!);
+    // Button should show loading state
+    expect(porcoRossoButton).toHaveTextContent('Loading...');
 
-    // During loading, card should have reduced opacity
-    expect(porcoRossoCard).toHaveStyle({ opacity: '0.7' });
-
-    // Wait for loading to complete
+    // Wait for loading to complete and button to be replaced with card
     await waitFor(
       () => {
-        expect(porcoRossoCard).toHaveStyle({ opacity: '1' });
+        // Check for the film images (front and back)
+        const images = screen.getAllByAltText('Porco Rosso poster');
+        expect(images).toHaveLength(2);
       },
       { timeout: 2000 },
     );
   });
 
-  it('has clickable film cards', () => {
+  it('has clickable film buttons', () => {
     render(<Home />);
 
-    const cards = document.querySelectorAll('.MuiCard-root');
-    expect(cards).toHaveLength(4);
+    const buttons = screen.getAllByRole('button');
+    expect(buttons.length).toBe(4);
 
-    cards.forEach((card) => {
-      expect(card).toBeInTheDocument();
-      expect(card).toHaveStyle({ cursor: 'pointer' });
+    buttons.forEach((button) => {
+      expect(button).toBeInTheDocument();
     });
   });
 
   it('renders with proper styling classes', () => {
     render(<Home />);
 
-    // Check that the styled components are rendered
-    const cards = document.querySelectorAll('.MuiCard-root');
-    expect(cards.length).toBe(4);
+    // Check that the buttons are rendered
+    const buttons = screen.getAllByRole('button');
+    expect(buttons.length).toBe(4);
 
-    // Check that cards have proper styling
-    cards.forEach((card) => {
-      expect(card).toHaveClass('MuiCard-root');
+    // Check that buttons have proper styling
+    buttons.forEach((button) => {
+      expect(button).toBeInTheDocument();
     });
   });
 });

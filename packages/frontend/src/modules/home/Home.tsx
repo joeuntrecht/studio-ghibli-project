@@ -1,92 +1,83 @@
 import { useState } from 'react';
-import {
-  Box,
-  Typography,
-  Grid,
-  Container,
-  Card,
-  CardContent,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Box, Typography, Grid, Container, Button } from '@mui/material';
 
-// Film data from the PRD with colors matching the design
-const FILMS = [
+import { styled } from '@mui/material/styles';
+import { FilmCard } from '~/shared/components/FilmCard';
+import { useGetFilm } from '~/graphql/hooks';
+
+// Film colors mapping for the design
+const FILM_COLORS = {
+  'ebbb6b7c-945c-41ee-a792-de0e43191bd8': '#FF6B35', // Porco Rosso - Orange/red
+  'ea660b10-85c4-4ae3-8a5f-41cea3648e3e': '#FF8E53', // Kiki's Delivery Service - Light orange
+  'cd3d059c-09f4-4ff3-8d63-bc765a5184fa': '#4A90E2', // Howl's Moving Castle - Blue
+  '58611129-2dbc-4a81-a72f-77ddfc1b1b49': '#8BC34A', // My Neighbor Totoro - Green
+};
+
+// Initial film buttons data
+const INITIAL_FILMS = [
   {
     id: 'ebbb6b7c-945c-41ee-a792-de0e43191bd8',
     title: 'Porco Rosso',
-    color: '#FF6B35', // Orange/red color
+    color: '#FF6B35',
   },
   {
     id: 'ea660b10-85c4-4ae3-8a5f-41cea3648e3e',
     title: "Kiki's Delivery Service",
-    color: '#FF8E53', // Light orange
+    color: '#FF8E53',
   },
   {
     id: 'cd3d059c-09f4-4ff3-8d63-bc765a5184fa',
     title: "Howl's Moving Castle",
-    color: '#4A90E2', // Blue color
+    color: '#4A90E2',
   },
   {
     id: '58611129-2dbc-4a81-a72f-77ddfc1b1b49',
     title: 'My Neighbor Totoro',
-    color: '#8BC34A', // Green color
+    color: '#8BC34A',
   },
 ];
 
 // Styled components to match the Zeplin design
 const SkyBackground = styled(Box)({
-  background: 'linear-gradient(180deg, #87CEEB 0%, #B0E0E6 100%)',
+  background: 'url("/assets/cloud_background.png")',
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
   minHeight: '100vh',
   position: 'relative',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background:
-      'url("data:image/svg+xml,%3Csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="20" cy="20" r="3" fill="white" opacity="0.8"/%3E%3Ccircle cx="80" cy="40" r="2" fill="white" opacity="0.6"/%3E%3Ccircle cx="40" cy="80" r="2.5" fill="white" opacity="0.7"/%3E%3C/svg%3E")',
-    backgroundSize: '200px 200px',
-    opacity: 0.3,
-  },
 });
 
-const FilmCard = styled(Card)(({ theme }) => ({
+const FilmButton = styled(Button, {
+  shouldForwardProp: (prop) => prop !== 'color',
+})<{ color: string }>(({ color }) => ({
+  background: color,
+  color: 'white',
   borderRadius: '16px',
   border: '2px solid white',
-  background: 'white',
+  padding: '24px',
+  fontSize: '0.95rem',
+  fontWeight: 700,
+  textTransform: 'none',
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-  cursor: 'pointer',
   transition: 'all 0.3s ease',
+  height: '300px',
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   position: 'relative',
-  overflow: 'hidden',
   '&:hover': {
+    background: color,
     transform: 'translateY(-8px)',
     boxShadow: '0 16px 48px rgba(0, 0, 0, 0.2)',
   },
+  '&:disabled': {
+    background: '#ccc',
+    color: '#666',
+  },
 }));
 
-const FilmCardContent = styled(CardContent)({
-  padding: '24px',
-  textAlign: 'center',
-  position: 'relative',
-  minHeight: '200px',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-});
-
-const FilmTitle = styled(Typography)({
-  color: 'white',
-  fontWeight: 600,
-  fontSize: '1.2rem',
-  textAlign: 'center',
-  marginBottom: '16px',
-});
-
-const ArrowButton = styled(Box)({
+const ArrowIcon = styled(Box)({
   position: 'absolute',
   bottom: '16px',
   right: '16px',
@@ -109,6 +100,7 @@ const ArrowButton = styled(Box)({
 });
 
 const Home = () => {
+  const [fetchedFilms, setFetchedFilms] = useState<Record<string, any>>({});
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
     {},
   );
@@ -118,8 +110,68 @@ const Home = () => {
 
     try {
       console.log(`Fetching film with ID: ${filmId}`);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log(`Film ${filmId} data fetched successfully`);
+
+      // Make actual GraphQL call to backend
+      const response = await fetch('http://localhost:4000/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            query GetFilm($id: String!) {
+              film(id: $id) {
+                id
+                title
+                original_title
+                original_title_romanised
+                image
+                movie_banner
+                description
+                director
+                producer
+                release_date
+                running_time
+                rt_score
+                people
+                species
+                locations
+                vehicles
+                url
+              }
+            }
+          `,
+          variables: {
+            id: filmId,
+          },
+        }),
+      });
+
+      const result = await response.json();
+      console.log('GraphQL Response:', JSON.stringify(result, null, 2));
+
+      if (result.errors) {
+        console.error('GraphQL Errors:', result.errors);
+        throw new Error('GraphQL query failed');
+      }
+
+      if (result.data?.film) {
+        const filmData = {
+          ...result.data.film,
+          color: INITIAL_FILMS.find((f) => f.id === filmId)?.color || '#666',
+          // Use the actual image URL from the API response
+          image:
+            result.data.film.image ||
+            'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop&crop=center',
+        };
+
+        console.log('Image URL from API:', result.data.film.image);
+        console.log('Processed film data:', JSON.stringify(filmData, null, 2));
+        setFetchedFilms((prev) => ({ ...prev, [filmId]: filmData }));
+      } else {
+        console.error('No film data in response');
+        throw new Error('No film data received');
+      }
     } catch (error) {
       console.error(`Error fetching film ${filmId}:`, error);
     } finally {
@@ -131,7 +183,7 @@ const Home = () => {
     <SkyBackground>
       <Container maxWidth="lg">
         <Box
-          padding="32px"
+          padding={{ xs: '24px 8px', sm: '32px 16px', md: '48px 32px' }}
           display="flex"
           flexDirection="column"
           alignItems="center"
@@ -149,7 +201,8 @@ const Home = () => {
               mb: 4,
               color: '#333',
               fontWeight: 700,
-              fontSize: { xs: '2.5rem', md: '3.5rem' },
+              fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3.5rem' },
+              wordBreak: 'break-word',
             }}
           >
             Discover Studio Ghibli Films
@@ -169,23 +222,54 @@ const Home = () => {
             Select a film & hover to learn more
           </Typography>
 
-          <Grid container spacing={4} justifyContent="center">
-            {FILMS.map((film) => (
-              <Grid item xs={12} sm={6} md={3} key={film.id}>
-                <FilmCard
-                  onClick={() => handleFilmClick(film.id)}
+          <Grid
+            container
+            spacing={{ xs: 2, sm: 3, md: 4 }}
+            justifyContent="center"
+            sx={{
+              width: '100%',
+              margin: '0 auto',
+              px: { xs: 1, sm: 2, md: 0 },
+              maxWidth: '100%',
+            }}
+          >
+            {INITIAL_FILMS.map((film) => {
+              const fetchedFilm = fetchedFilms[film.id];
+              const isLoading = loadingStates[film.id] || false;
+
+              return (
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={3}
+                  key={film.id}
                   sx={{
-                    background: film.color,
-                    opacity: loadingStates[film.id] ? 0.7 : 1,
+                    display: 'flex',
+                    justifyContent: 'center',
                   }}
                 >
-                  <FilmCardContent>
-                    <FilmTitle variant="h6">{film.title}</FilmTitle>
-                    <ArrowButton />
-                  </FilmCardContent>
-                </FilmCard>
-              </Grid>
-            ))}
+                  {fetchedFilm ? (
+                    // Show card if film has been fetched
+                    <FilmCard
+                      film={fetchedFilm}
+                      onClick={() => handleFilmClick(film.id)}
+                      loading={isLoading}
+                    />
+                  ) : (
+                    // Show button if film hasn't been fetched yet
+                    <FilmButton
+                      color={film.color}
+                      onClick={() => handleFilmClick(film.id)}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Loading...' : film.title}
+                      {!isLoading && <ArrowIcon />}
+                    </FilmButton>
+                  )}
+                </Grid>
+              );
+            })}
           </Grid>
         </Box>
       </Container>

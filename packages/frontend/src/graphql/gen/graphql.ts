@@ -36,7 +36,9 @@ export type Film = {
   description: Scalars['String']['output'];
   director: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  image?: Maybe<Scalars['String']['output']>;
   locations?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  movie_banner?: Maybe<Scalars['String']['output']>;
   original_title?: Maybe<Scalars['String']['output']>;
   original_title_romanised?: Maybe<Scalars['String']['output']>;
   people?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
